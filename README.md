@@ -29,3 +29,75 @@ int main() {
 
     return 0;
 }
+BREADTH FIRST SEARCH
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+int queue[MAX];
+int front = -1, rear = -1;
+
+void enqueue(int value) {
+    if (rear == MAX - 1)
+        printf("Queue Overflow\n");
+    else {
+        if (front == -1)
+            front = 0;
+        queue[++rear] = value;
+    }
+}
+
+int dequeue() {
+    if (front == -1 || front > rear) {
+        printf("Queue Underflow\n");
+        return -1;
+    }
+    return queue[front++];
+}
+
+int isEmpty() {
+    return (front == -1 || front > rear);
+}
+
+void BFS(int graph[MAX][MAX], int n, int start) {
+    int visited[MAX] = {0};
+
+    enqueue(start);
+    visited[start] = 1;
+
+    while (!isEmpty()) {
+        int node = dequeue();
+        printf("%d ", node);
+
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && !visited[i]) {
+                enqueue(i);
+                visited[i] = 1;
+            }
+        }
+    }
+}
+
+int main() {
+    int n, start;
+    int graph[MAX][MAX];
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    printf("Enter starting node: ");
+    scanf("%d", &start);
+
+    printf("BFS Traversal: ");
+    BFS(graph, n, start);
+
+    return 0;
+}
