@@ -235,3 +235,54 @@ int main() {
 
     return 0;
 }
+RECURSIVE VERSION OF 0/1 KNAPSACK
+#include <stdio.h>
+
+// Function to return maximum of two numbers
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Recursive Knapsack function
+int knapsack(int W, int wt[], int val[], int n) {
+    // Base case
+    if (n == 0 || W == 0)
+        return 0;
+
+    // If weight of nth item is more than capacity, skip it
+    if (wt[n-1] > W)
+        return knapsack(W, wt, val, n-1);
+
+    // Return max of including or excluding the item
+    else
+        return max(
+            val[n-1] + knapsack(W - wt[n-1], wt, val, n-1), // include
+            knapsack(W, wt, val, n-1)                       // exclude
+        );
+}
+
+int main() {
+    int n, W;
+
+    printf("Enter number of items: ");
+    scanf("%d", &n);
+
+    int wt[n], val[n];
+
+    printf("Enter weights:\n");
+    for(int i = 0; i < n; i++)
+        scanf("%d", &wt[i]);
+
+    printf("Enter values:\n");
+    for(int i = 0; i < n; i++)
+        scanf("%d", &val[i]);
+
+    printf("Enter capacity: ");
+    scanf("%d", &W);
+
+    int result = knapsack(W, wt, val, n);
+
+    printf("Maximum value = %d", result);
+
+    return 0;
+}
