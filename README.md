@@ -286,3 +286,75 @@ int main() {
 
     return 0;
 }
+BREADTH FIRST SEARCH USING RECURSION
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+int graph[MAX][MAX];
+int visited[MAX];
+int queue[MAX];
+int front = 0, rear = 0;
+int n;
+
+// Enqueue
+void enqueue(int v) {
+    if (rear < MAX) {
+        queue[rear++] = v;
+    }
+}
+
+// Recursive BFS function
+void bfs_recursive() {
+    if (front == rear)  // queue empty
+        return;
+
+    int current = queue[front++];
+    printf("%d ", current);
+
+    for (int i = 0; i < n; i++) {
+        if (graph[current][i] == 1 && !visited[i]) {
+            visited[i] = 1;
+            enqueue(i);
+        }
+    }
+
+    bfs_recursive();  // recursive call
+}
+
+int main() {
+    int start;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix:\n");
+    for (int i = 0; i < n; i++) {
+        visited[i] = 0;
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    printf("Enter starting vertex: ");
+    scanf("%d", &start);
+
+    visited[start] = 1;
+    enqueue(start);
+
+    printf("BFS Traversal: ");
+    bfs_recursive();
+
+    return 0;
+}
+INPUT:
+Enter number of vertices: 4
+Enter adjacency matrix:
+0 1 1 0
+1 0 1 1
+1 1 0 0
+0 1 0 0
+Enter starting vertex: 0
+OUTPUT:
+BFS Traversal: 0 1 2 3
