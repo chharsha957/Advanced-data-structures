@@ -576,3 +576,149 @@ Enter cost matrix:
 20 25 30 0
 OUTPUT:
 Minimum travelling cost: 80
+LRU CACHE IMPLEMENTATION USING DOUBLY LINKED LIST + HASHING
+#include <stdio.h>
+#include <stdlib.h>
+
+#define CAPACITY 3
+
+// Doubly Linked List Node
+typedef struct Node {
+    int key, value;
+    struct Node *prev, *next;
+} Node;
+
+// Hash Table (simple array for demo)
+Node* hash[100];
+
+// Head and Tail
+Node *head = NULL, *tail = NULL;
+
+// Create new node
+Node* createNode(int key, int value) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->key = key;
+    node->value = value;
+    node->prev = node->next = NULL;
+    return node;
+}
+
+// Remove node from DLL
+void removeNode(Node* node) {
+    if (!node) return;
+
+    if (node == head)
+        head = node->next;
+    if (node == tail)
+        tail = node->prev;
+
+    if (node->prev)
+        node->prev->next = node->next;
+    if (node->next)
+        node->next->prev = node->prev;
+}
+
+// Insert at front
+void insertFront(Node* node) {
+    node->next = head;
+    node->prev = NULL;
+
+    if (head)
+        head->prev = node;
+
+    head = node;
+
+    if (!tail)
+        tail = head;
+}
+
+// Get value
+int get(int key) {
+    if (hash[key] == NULL)
+        return -1;
+
+    Node* node = hash[key];
+
+    removeNode(node);
+    insertFront(node);
+
+    return node->value;
+}
+
+// Put key-value
+void put(int key, int value) {
+    if (hash[key] != NULL) {
+        Node* node = hash[key];
+        node->value = value;
+        removeNode(node);
+        insertFront(node);
+        return;
+    }
+
+    Node* newNode = createNode(key, value);
+
+    if (CAPACITY == 0) return;
+
+    // If full, remove LRU
+    int count = 0;
+    Node* temp = head;
+    while (temp) {
+        count++;
+        temp = temp->next;
+    }
+
+    if (count == CAPACITY) {
+        hash[tail->key] = NULL;
+        removeNode(tail);
+    }
+
+    insertFront(newNode);
+    hash[key] = newNode;
+}
+
+// Display cache
+void display() {
+    Node* temp = head;
+    while (temp) {
+        printf("(%d:%d) ", temp->key, temp->value);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Main
+int main() {
+    put(1, 10);
+    put(2, 20);
+    put(3, 30);
+    display();
+
+    get(1);
+    display();
+
+    put(4, 40);
+    display();
+
+    return 0;
+}
+EXECUTION
+put(1, 10);
+put(2, 20);
+put(3, 30);
+display();
+OUTPUT:
+(3:30) (2:20) (1:10)
+//AFTER
+get(1);
+display();
+OUTPUT:
+(1:10) (3:30) (2:20)
+//AFTER
+put(4, 40);
+display();
+OUTPUT:
+(4:40) (1:10) (3:30)
+FINAL OUTPUT SUMMARY:
+(3:30) (2:20) (1:10)
+(1:10) (3:30) (2:20)
+(4:40) (1:10) (3:30)
