@@ -722,3 +722,80 @@ FINAL OUTPUT SUMMARY:
 (3:30) (2:20) (1:10)
 (1:10) (3:30) (2:20)
 (4:40) (1:10) (3:30)
+SEGMENT TREE
+#include <stdio.h>
+#include <math.h>
+
+// Build Segment Tree
+void build(int arr[], int seg[], int low, int high, int pos) {
+    if (low == high) {
+        seg[pos] = arr[low];
+        return;
+    }
+
+    int mid = (low + high) / 2;
+
+    build(arr, seg, low, mid, 2 * pos + 1);
+    build(arr, seg, mid + 1, high, 2 * pos + 2);
+
+    seg[pos] = seg[2 * pos + 1] + seg[2 * pos + 2];
+}
+
+// Range Sum Query
+int query(int seg[], int qlow, int qhigh, int low, int high, int pos) {
+
+    // Total overlap
+    if (qlow <= low && qhigh >= high)
+        return seg[pos];
+
+    // No overlap
+    if (qlow > high || qhigh < low)
+        return 0;
+
+    // Partial overlap
+    int mid = (low + high) / 2;
+
+    return query(seg, qlow, qhigh, low, mid, 2 * pos + 1) +
+           query(seg, qlow, qhigh, mid + 1, high, 2 * pos + 2);
+}
+
+// Update value
+void update(int arr[], int seg[], int index, int value, int low, int high, int pos) {
+
+    if (low == high) {
+        arr[index] = value;
+        seg[pos] = value;
+        return;
+    }
+
+    int mid = (low + high) / 2;
+
+    if (index <= mid)
+        update(arr, seg, index, value, low, mid, 2 * pos + 1);
+    else
+        update(arr, seg, index, value, mid + 1, high, 2 * pos + 2);
+
+    seg[pos] = seg[2 * pos + 1] + seg[2 * pos + 2];
+}
+
+// Main
+int main() {
+    int arr[] = {1, 3, 5, 7, 9, 11};
+    int n = 6;
+
+    int size = 2 * (int)pow(2, ceil(log2(n))) - 1;
+    int seg[size];
+
+    build(arr, seg, 0, n - 1, 0);
+
+    printf("Sum of values in range(1,3): %d\n", query(seg, 1, 3, 0, n - 1, 0));
+
+    update(arr, seg, 1, 10, 0, n - 1, 0);
+
+    printf("Updated sum of values in range(1,3): %d\n", query(seg, 1, 3, 0, n - 1, 0));
+
+    return 0;
+}
+OUTPUT:
+Sum of values in range(1,3): 15
+Updated sum of values in range(1,3): 22
